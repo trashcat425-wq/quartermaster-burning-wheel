@@ -1,0 +1,47 @@
+{
+  "id": "quartermaster-burning-wheel",
+  "title": "Quartermaster: Burning Wheel",
+  "description": "Burning Wheel-compatible shared party inventory, currency ledger, resource tracker, and transaction log. Based on Quartermaster by Paul Miscavage.",
+  "version": "0.1.0-bw.1",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14.365",
+    "maximum": "14"
+  },
+  "authors": [
+    {
+      "name": "Paul Miscavage (original Quartermaster)",
+      "url": "https://github.com/Lipton1010/quartermaster"
+    },
+    {
+      "name": "Community Burning Wheel adaptation"
+    }
+  ],
+  "esmodules": [
+    "scripts/module.js"
+  ],
+  "styles": [
+    "styles/module.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "burningwheel",
+        "type": "system",
+        "compatibility": {
+          "minimum": "1.7.1",
+          "verified": "1.7.1"
+        }
+      }
+    ]
+  },
+  "socket": true,
+  "license": "MIT"
+}
