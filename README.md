@@ -1,45 +1,60 @@
 # Quartermaster: Burning Wheel
 
-A Burning Wheel-compatible adaptation of the open-source **Quartermaster** Foundry VTT module by Paul Miscavage.
+A Burning Wheel-compatible shared party inventory module for Foundry VTT 14, adapted from Quartermaster by Paul Miscavage.
 
-## Compatibility target
+## Features
 
-- Foundry Virtual Tabletop 14
-- `burningwheel` system 1.7.1
+- Hidden shared-vault Actor.
+- Party inventory window in the Items sidebar.
+- Drag-and-drop deposits and withdrawals.
+- Supported physical Burning Wheel Items: possessions, property, melee weapons, ranged weapons, and armor.
+- Optional spell storage.
+- Currency columns containing editable denomination rows.
+- Per-Currency denomination conversion values and exact conversion tools.
+- Shared resource counters.
+- Transaction history.
 
-## Included in this beta
+## Ledger model
 
-- Hidden shared-vault Actor
-- Shared physical inventory
-- Drag Items from controlled Actors, world Items, or compendiums into the vault
-- Send vault Items to a selected controlled Actor
-- Drag vault Items onto Burning Wheel Actor sheets
-- Burning Wheel Item whitelist: possession, property, melee weapon, ranged weapon, armor
-- Optional spell storage
-- Module-owned shared currency ledger
-- Shared resource counters
-- Transaction log
-- Player requests routed through a connected GM
-- Macro API: `game.modules.get("quartermaster-burning-wheel").api.open()`
+A **Currency** is one Ledger column. Each Currency contains one or more denominations. Every denomination has:
 
-## Deliberate Burning Wheel behavior
+- A stable internal ID.
+- An editable name.
+- An optional abbreviation.
+- A positive whole-number conversion value.
+- Its own shared balance.
 
-The module does **not** synchronize its shared ledger with Actor `system.cash`, `system.funds`, `system.resources`, or `system.resourcesTax`. Those are Burning Wheel character mechanics rather than ordinary coin denominations.
+The smallest denomination must have a conversion value of `1`. Other values are measured relative to it. For example:
 
-Beliefs, instincts, traits, skills, relationships, reputations, affiliations, and lifepaths are rejected from the vault.
+- Gold Crown: `240`
+- Silver Penny: `12`
+- Copper Bit: `1`
 
-## Installation
+This allows exact conversions such as one Gold Crown into twenty Silver Pennies.
 
-1. Unzip the package into Foundry's `Data/modules` directory.
-2. The final directory must be `Data/modules/quartermaster-burning-wheel/` with `module.json` directly inside it.
-3. Start a Burning Wheel world and enable **Quartermaster: Burning Wheel** under Manage Modules.
-4. Connect once as a GM. The hidden vault Actor is created automatically.
-5. Open the Items sidebar and click **Party Inventory**.
+Conversions only occur inside the same Currency column. The module does not exchange one Currency column into another.
 
-## Testing status
+## Migration from 0.1.x
 
-This package has been statically validated for JSON and JavaScript syntax. It has not been executed inside a live Foundry 14 Burning Wheel world, so treat version `0.1.0-bw.1` as a development beta and back up the world before testing.
+The first GM to load a world after updating automatically migrates the old flat ledger:
 
-## Attribution
+- Each old non-Treasury entry becomes a Currency column with one denomination.
+- Existing balances remain attached to their original internal IDs.
+- The old Treasury entry is removed from the visible Ledger.
+- Any Treasury balance is preserved in the vault's hidden `legacyTreasury` flag.
 
-Quartermaster is Copyright (c) 2026 Paul Miscavage and distributed under the MIT License. This adaptation preserves the original copyright and license notice.
+Back up the world before updating.
+
+## Burning Wheel wealth separation
+
+The Quartermaster ledger is module-owned. It does not alter Burning Wheel Cash, Funds, Resources exponent, or Resources tax.
+
+## Macro API
+
+```js
+game.modules.get("quartermaster-burning-wheel").api.open();
+```
+
+## License and attribution
+
+This adaptation retains the original Quartermaster copyright and MIT license notice.
