@@ -98,7 +98,7 @@ export class QuartermasterBWApp extends Application {
     const row = event.currentTarget.closest(".qm-item-row");
     const item = getVault()?.items.get(row?.dataset.itemId);
     if (!item) return;
-    event.dataTransfer.setData("text/plain", JSON.stringify({ type: "Item", uuid: item.uuid, itemId: item.id, sourceActorId: getVault().id, quartermasterBW: true }));
+    event.dataTransfer.setData("text/plain", JSON.stringify({ type: "QuartermasterBWItem", uuid: item.uuid, itemId: item.id, sourceActorId: getVault().id, quartermasterBW: true }));
   }
 
   async _onDrop(event) {
