@@ -21,13 +21,32 @@ export function displayDescription(item) {
   return raw?.value ?? "";
 }
 
+/**
+ * Remove Quartermaster-only transient state without relying on a Foundry utility
+ * whose name differs between core versions.
+ */
+function removeTemporaryFlag(data) {
+  const moduleFlags = data?.flags?.[MODULE_ID];
+  if (!moduleFlags || typeof moduleFlags !== "object") return;
+
+  delete moduleFlags.temporary;
+
+  if (Object.keys(moduleFlags).length === 0) delete data.flags[MODULE_ID];
+  if (data.flags && Object.keys(data.flags).length === 0) delete data.flags;
+}
+
 export function sanitizeForTransfer(itemData) {
   const data = foundry.utils.deepClone(itemData);
   delete data._id;
   delete data.folder;
   delete data.sort;
-  if (data.system && Object.hasOwn(data.system, "equipped")) data.system.equipped = false;
-  foundry.utils.unsetProperty(data, `flags.${MODULE_ID}.temporary`);
+
+  // Burning Wheel armor should arrive unequipped after transfer.
+  if (data.system && Object.prototype.hasOwnProperty.call(data.system, "equipped")) {
+    data.system.equipped = false;
+  }
+
+  removeTemporaryFlag(data);
   return data;
 }
 
