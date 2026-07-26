@@ -24,14 +24,22 @@ Hooks.on("renderUserConfig", hideVaultFromUserConfig);
 Hooks.on("preUpdateUser", preventVaultCharacterAssignment);
 Hooks.on("preDeleteActor", preventVaultDeletion);
 
-Hooks.on("dropActorSheetData", async (actor, _sheet, data) => {
+const pendingSheetDrops = new Set();
+
+Hooks.on("dropActorSheetData", (actor, _sheet, data) => {
   if (!data?.quartermasterBW || !data.itemId) return;
-  try {
-    await requestOperation("withdraw", { itemId: data.itemId, targetActorId: actor.id });
-    ui.notifications.info(`${MODULE_TITLE}: item transferred to ${actor.name}.`);
-    return false;
-  } catch (error) {
-    ui.notifications.error(error.message);
-    return false;
+
+  // This hook must return false synchronously. An async hook returns a Promise,
+  // which allows the Actor sheet's normal Item-drop handler to run as well and
+  // create a duplicate before Quartermaster completes its own withdrawal.
+  const transferKey = `${data.itemId}:${actor.id}`;
+  if (!pendingSheetDrops.has(transferKey)) {
+    pendingSheetDrops.add(transferKey);
+    requestOperation("withdraw", { itemId: data.itemId, targetActorId: actor.id })
+      .then(() => ui.notifications.info(`${MODULE_TITLE}: item transferred to ${actor.name}.`))
+      .catch(error => ui.notifications.error(error.message))
+      .finally(() => pendingSheetDrops.delete(transferKey));
   }
+
+  return false;
 });
