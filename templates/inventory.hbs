@@ -1,0 +1,75 @@
+<section class="qm-window">
+  {{#unless hasVault}}
+    <p class="notification warning">The shared vault is unavailable. A GM must connect once so it can be created.</p>
+  {{/unless}}
+
+  <nav class="tabs qm-tabs" data-group="primary-tabs">
+    <a class="item" data-tab="inventory"><i class="fas fa-box-open"></i> Inventory</a>
+    <a class="item" data-tab="ledger"><i class="fas fa-coins"></i> Ledger</a>
+    <a class="item" data-tab="resources"><i class="fas fa-list-ol"></i> Resources</a>
+    <a class="item" data-tab="log"><i class="fas fa-scroll"></i> Log</a>
+  </nav>
+
+  <div class="qm-content">
+    <div class="tab" data-group="primary-tabs" data-tab="inventory">
+      <div class="qm-toolbar">
+        <label>Send withdrawals to
+          <select name="targetActor">
+            {{#each actors}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+          </select>
+        </label>
+        <span class="qm-hint">Drop owned Items or compendium Items anywhere in this window. Allowed types: {{allowedTypes}}.</span>
+      </div>
+      <ol class="qm-list">
+        {{#each items}}
+        <li class="qm-item-row" data-item-id="{{id}}" draggable="true">
+          <img src="{{img}}" alt="" width="36" height="36">
+          <div class="qm-item-main" data-action="open-item" data-item-id="{{id}}">
+            <strong>{{name}}</strong>
+            <small>{{type}}{{#if quantity}} · Qty {{quantity}}{{/if}}</small>
+          </div>
+          <button type="button" data-action="withdraw" data-item-id="{{id}}" title="Send to selected Actor"><i class="fas fa-share"></i></button>
+          {{#if ../isGM}}<button type="button" data-action="delete-item" data-item-id="{{id}}" title="Delete"><i class="fas fa-trash"></i></button>{{/if}}
+        </li>
+        {{else}}
+        <li class="qm-empty">The party vault is empty.</li>
+        {{/each}}
+      </ol>
+    </div>
+
+    <div class="tab" data-group="primary-tabs" data-tab="ledger">
+      <div class="qm-card-grid">
+        {{#each currencies}}
+        <article class="qm-card">
+          <div><strong>{{name}}</strong>{{#if abbreviation}} <small>({{abbreviation}})</small>{{/if}}</div>
+          <div class="qm-value">{{balance}}</div>
+          {{#if ../isGM}}<div class="qm-actions"><button type="button" data-action="currency-adjust" data-currency-id="{{id}}">Adjust</button><button type="button" data-action="remove-currency" data-currency-id="{{id}}"><i class="fas fa-trash"></i></button></div>{{/if}}
+        </article>
+        {{/each}}
+      </div>
+      {{#if isGM}}<button type="button" data-action="add-currency"><i class="fas fa-plus"></i> Add currency</button>{{/if}}
+      <p class="qm-hint">This ledger is module-owned. It does not modify a character's Burning Wheel Cash, Funds, Resources exponent, or Resources tax.</p>
+    </div>
+
+    <div class="tab" data-group="primary-tabs" data-tab="resources">
+      <div class="qm-card-grid">
+        {{#each resources}}
+        <article class="qm-card">
+          <strong>{{name}}</strong>
+          <div class="qm-value">{{value}}{{#if max}} / {{max}}{{/if}}</div>
+          {{#if ../isGM}}<div class="qm-actions"><button type="button" data-action="resource-adjust" data-resource-id="{{id}}">Adjust</button><button type="button" data-action="remove-resource" data-resource-id="{{id}}"><i class="fas fa-trash"></i></button></div>{{/if}}
+        </article>
+        {{else}}<p class="qm-empty">No shared resources are configured.</p>{{/each}}
+      </div>
+      {{#if isGM}}<button type="button" data-action="add-resource"><i class="fas fa-plus"></i> Add resource</button>{{/if}}
+    </div>
+
+    <div class="tab" data-group="primary-tabs" data-tab="log">
+      <ol class="qm-log">
+        {{#each transactions}}
+        <li><strong>{{action}}</strong> {{name}} <small>{{when}} · {{userName}}{{#if source}} · {{source}}{{/if}}{{#if destination}} → {{destination}}{{/if}}</small></li>
+        {{else}}<li class="qm-empty">No transactions recorded.</li>{{/each}}
+      </ol>
+    </div>
+  </div>
+</section>

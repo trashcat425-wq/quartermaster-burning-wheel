@@ -1,0 +1,24 @@
+#quartermaster-burning-wheel-app .window-content { padding: 0; }
+.qm-window { height: 100%; display: flex; flex-direction: column; gap: .5rem; padding: .65rem; overflow: hidden; }
+.qm-tabs { display: flex; gap: .25rem; border-bottom: 1px solid var(--color-border-light-primary); }
+.qm-tabs .item { flex: 1; text-align: center; padding: .45rem; }
+.qm-tabs .item.active { font-weight: 700; text-shadow: 0 0 8px var(--color-shadow-primary); }
+.qm-content { flex: 1; min-height: 0; overflow: hidden; }
+.qm-content > .tab.active { height: 100%; overflow: auto; }
+.qm-toolbar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .5rem; }
+.qm-toolbar select { min-width: 220px; }
+.qm-hint { opacity: .75; font-size: .85em; }
+.qm-list, .qm-log { list-style: none; margin: 0; padding: 0; }
+.qm-item-row { display: grid; grid-template-columns: 40px 1fr auto auto; gap: .5rem; align-items: center; padding: .4rem; border-bottom: 1px solid rgba(127,127,127,.25); cursor: grab; }
+.qm-item-row:hover { background: rgba(127,127,127,.12); }
+.qm-item-row img { object-fit: cover; border: 0; }
+.qm-item-main { min-width: 0; }
+.qm-item-main strong, .qm-item-main small { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.qm-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .65rem; margin-bottom: .65rem; }
+.qm-card { border: 1px solid var(--color-border-light-primary); border-radius: 4px; padding: .65rem; background: rgba(127,127,127,.08); }
+.qm-value { font-size: 1.6rem; font-weight: 700; margin: .3rem 0; }
+.qm-actions { display: flex; gap: .35rem; }
+.qm-log li { padding: .4rem; border-bottom: 1px solid rgba(127,127,127,.25); }
+.qm-log small { display: block; opacity: .7; }
+.qm-empty { padding: 1rem; text-align: center; opacity: .7; }
+.qm-bw-sidebar-button { width: 100%; margin-top: .35rem; }
