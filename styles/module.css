@@ -354,3 +354,11 @@
   .qm-denomination-editor-row { grid-template-columns: 44px 1fr 1fr; }
   .qm-denomination-editor-row .qm-conversion-value-field { grid-column: 2; }
 }
+
+/* 0.3.1: Inventory category and sort dropdowns use dark text on the host's bright select background. */
+.qm-inventory-toolbar select[name="inventoryCategory"],
+.qm-inventory-toolbar select[name="inventorySort"],
+.qm-inventory-toolbar select[name="inventoryCategory"] option,
+.qm-inventory-toolbar select[name="inventorySort"] option {
+  color: #111111 !important;
+}
