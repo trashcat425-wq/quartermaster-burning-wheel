@@ -4,72 +4,187 @@
   {{/unless}}
 
   <nav class="tabs qm-tabs" data-group="primary-tabs">
-    <a class="item" data-tab="inventory"><i class="fas fa-box-open"></i> Inventory</a>
-    <a class="item" data-tab="ledger"><i class="fas fa-coins"></i> Ledger</a>
-    <a class="item" data-tab="resources"><i class="fas fa-list-ol"></i> Resources</a>
-    <a class="item" data-tab="log"><i class="fas fa-scroll"></i> Log</a>
+    <a class="item" data-tab="inventory">Inventory</a>
+    <a class="item" data-tab="ledger">Ledger</a>
+    <a class="item" data-tab="transactions">Transactions</a>
+    <a class="item" data-tab="settings">Settings</a>
   </nav>
 
   <div class="qm-content">
     <div class="tab" data-group="primary-tabs" data-tab="inventory">
-      <div class="qm-toolbar">
-        <label>Send withdrawals to
+      <div class="qm-inventory-toolbar">
+        <div class="qm-search-field">
+          <i class="fas fa-search"></i>
+          <input type="search" name="inventorySearch" value="{{inventorySearch}}" placeholder="Search party inventory…">
+        </div>
+        <select name="inventoryCategory" aria-label="Inventory section">
+          {{#each inventoryCategories}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+        </select>
+        <select name="inventorySort" aria-label="Sort inventory">
+          {{#each sortOptions}}<option value="{{id}}" {{#if selected}}selected{{/if}}>Sort: {{name}}</option>{{/each}}
+        </select>
+        {{#if isGM}}<button type="button" class="qm-primary" data-action="deposit-items"><i class="fas fa-plus"></i> Deposit Items</button>{{/if}}
+      </div>
+
+      <div class="qm-inventory-heading">
+        <div>
+          <h2>Shared Party Inventory</h2>
+          <p>{{itemCount}} matching item(s) in the vault. Drop an eligible Actor, world, or compendium Item anywhere in this window to deposit it.</p>
+        </div>
+        <label>Withdraw to
           <select name="targetActor">
             {{#each actors}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
           </select>
         </label>
-        <span class="qm-hint">Drop owned Items or compendium Items anywhere in this window. Allowed types: {{allowedTypes}}.</span>
       </div>
-      <ol class="qm-list">
-        {{#each items}}
-        <li class="qm-item-row" data-item-id="{{id}}" draggable="true">
-          <img src="{{img}}" alt="" width="36" height="36">
-          <div class="qm-item-main" data-action="open-item" data-item-id="{{id}}">
-            <strong>{{name}}</strong>
-            <small>{{type}}{{#if quantity}} · Qty {{quantity}}{{/if}}</small>
-          </div>
-          <button type="button" data-action="withdraw" data-item-id="{{id}}" title="Send to selected Actor"><i class="fas fa-share"></i></button>
-          {{#if ../isGM}}<button type="button" data-action="delete-item" data-item-id="{{id}}" title="Delete"><i class="fas fa-trash"></i></button>{{/if}}
-        </li>
-        {{else}}
-        <li class="qm-empty">The party vault is empty.</li>
-        {{/each}}
-      </ol>
+
+      <div class="qm-inventory-table">
+        <div class="qm-inventory-table-head">
+          <span>Image</span><span>Item Name</span><span>Type</span><span>Qty</span><span>Description</span><span>Actions</span>
+        </div>
+        <ol class="qm-list">
+          {{#each items}}
+          <li class="qm-item-row" data-item-id="{{id}}" draggable="true">
+            <div class="qm-item-image-cell">
+              {{#if ../isGM}}
+              <button type="button" class="qm-item-image-button" data-action="change-item-image" data-item-id="{{id}}" title="Choose Item image">
+                <img src="{{img}}" alt="">
+              </button>
+              {{else}}<img src="{{img}}" alt="">{{/if}}
+            </div>
+            <button type="button" class="qm-item-name" data-action="open-item" data-item-id="{{id}}">
+              <strong>{{name}}</strong><small>Open Item sheet</small>
+            </button>
+            <div class="qm-item-type"><strong>{{typeLabel}}</strong>{{#if categoryLabel}}<small>{{categoryLabel}}</small>{{/if}}</div>
+            <div class="qm-item-quantity">{{quantity}}</div>
+            <div class="qm-item-description">{{description}}</div>
+            <div class="qm-row-actions">
+              {{#if ../isGM}}{{#if canClassify}}<button type="button" data-action="classify-item" data-item-id="{{id}}" title="Classify as Gear or Possession"><i class="fas fa-tags"></i></button>{{/if}}{{/if}}
+              {{#if ../isGM}}<button type="button" data-action="change-item-image" data-item-id="{{id}}" title="Change image"><i class="fas fa-image"></i></button>{{/if}}
+              <button type="button" class="qm-withdraw" data-action="withdraw" data-item-id="{{id}}" title="Withdraw to selected Actor"><i class="fas fa-arrow-down"></i></button>
+              {{#if ../isGM}}<button type="button" class="qm-danger-icon" data-action="delete-item" data-item-id="{{id}}" title="Delete permanently"><i class="fas fa-trash"></i></button>{{/if}}
+            </div>
+          </li>
+          {{else}}
+          <li class="qm-empty">No Items match the current search and section.</li>
+          {{/each}}
+        </ol>
+      </div>
     </div>
 
     <div class="tab" data-group="primary-tabs" data-tab="ledger">
-      <div class="qm-card-grid">
+      <div class="qm-ledger-toolbar">
+        <div class="qm-ledger-toolbar-left">
+          {{#if isGM}}<button type="button" data-action="add-currency"><i class="fas fa-plus"></i> Add Currency</button>{{/if}}
+          <span>{{currencyCount}} Currencies</span>
+        </div>
+        {{#if isGM}}<button type="button" data-action="reorder-currencies"><i class="fas fa-arrow-right-arrow-left"></i> Reorder Currencies</button>{{/if}}
+      </div>
+
+      <div class="qm-currency-grid">
         {{#each currencies}}
-        <article class="qm-card">
-          <div><strong>{{name}}</strong>{{#if abbreviation}} <small>({{abbreviation}})</small>{{/if}}</div>
-          <div class="qm-value">{{balance}}</div>
-          {{#if ../isGM}}<div class="qm-actions"><button type="button" data-action="currency-adjust" data-currency-id="{{id}}">Adjust</button><button type="button" data-action="remove-currency" data-currency-id="{{id}}"><i class="fas fa-trash"></i></button></div>{{/if}}
+        <article class="qm-currency-column">
+          <header class="qm-currency-header">
+            <h3>{{name}}</h3>
+            {{#if ../isGM}}
+            <button type="button" class="qm-header-pencil" data-action="quick-rename-currency" data-currency-id="{{id}}" title="Quick rename"><i class="fas fa-pen"></i></button>
+            {{/if}}
+          </header>
+
+          <div class="qm-denomination-head">
+            <span>Denomination</span><span>Abbr.</span><span>Value in {{baseName}}</span><span>Balance</span><span></span>
+          </div>
+          <div class="qm-denomination-list">
+            {{#each denominations}}
+            <div class="qm-denomination-row">
+              <div class="qm-denomination-name">
+                {{#if ../../isGM}}
+                <button type="button" class="qm-denomination-image" data-action="change-denomination-image" data-denomination-id="{{id}}" title="Choose denomination icon"><img src="{{img}}" alt=""></button>
+                {{else}}<img class="qm-denomination-image-static" src="{{img}}" alt="">{{/if}}
+                <strong>{{name}}</strong>
+              </div>
+              <span class="qm-denomination-abbreviation">{{abbreviation}}</span>
+              <span class="qm-denomination-value">{{value}}</span>
+              {{#if ../../isGM}}
+              <input class="qm-balance-input" type="number" min="0" step="1" value="{{balance}}" data-action="currency-balance" data-denomination-id="{{id}}" aria-label="{{name}} balance">
+              <button type="button" data-action="currency-adjust" data-denomination-id="{{id}}" title="Adjust balance"><i class="fas fa-pen"></i></button>
+              {{else}}
+              <strong class="qm-denomination-balance">{{balance}}</strong><span></span>
+              {{/if}}
+            </div>
+            {{/each}}
+          </div>
+
+          {{#if ../isGM}}
+          <button type="button" class="qm-add-denomination" data-action="add-denomination-to-currency" data-currency-id="{{id}}"><i class="fas fa-plus"></i> Add Denomination</button>
+          <footer class="qm-currency-footer">
+            <button type="button" data-action="currency-convert" data-currency-id="{{id}}" {{#unless canConvert}}disabled{{/unless}}>Convert</button>
+            <button type="button" data-action="currency-normalize" data-currency-id="{{id}}">Normalize</button>
+            <button type="button" data-action="edit-currency" data-currency-id="{{id}}">Edit</button>
+            <button type="button" class="qm-danger" data-action="remove-currency" data-currency-id="{{id}}">Delete</button>
+          </footer>
+          {{/if}}
         </article>
-        {{/each}}
+        {{else}}<p class="qm-empty">No Currency columns are configured.</p>{{/each}}
       </div>
-      {{#if isGM}}<button type="button" data-action="add-currency"><i class="fas fa-plus"></i> Add currency</button>{{/if}}
-      <p class="qm-hint">This ledger is module-owned. It does not modify a character's Burning Wheel Cash, Funds, Resources exponent, or Resources tax.</p>
+
+      <section class="qm-recent-transactions">
+        <h3>Recent Transactions</h3>
+        <ol class="qm-transaction-list compact">
+          {{#each recentTransactions}}
+          <li>
+            <time>{{when}}</time>
+            <span><strong>{{userName}}</strong> — {{name}}{{#if details}}: {{details}}{{/if}}</span>
+            <span class="qm-transaction-type">{{label}} <i class="fas {{icon}}"></i></span>
+          </li>
+          {{else}}<li class="qm-empty">No transactions recorded.</li>{{/each}}
+        </ol>
+        <button type="button" data-action="view-transactions">View Full Transaction History</button>
+      </section>
+
+      <p class="qm-ledger-note">This Ledger is module-owned. It does not modify a character's Burning Wheel Cash, Funds, Resources exponent, or Resources tax.</p>
     </div>
 
-    <div class="tab" data-group="primary-tabs" data-tab="resources">
-      <div class="qm-card-grid">
-        {{#each resources}}
-        <article class="qm-card">
-          <strong>{{name}}</strong>
-          <div class="qm-value">{{value}}{{#if max}} / {{max}}{{/if}}</div>
-          {{#if ../isGM}}<div class="qm-actions"><button type="button" data-action="resource-adjust" data-resource-id="{{id}}">Adjust</button><button type="button" data-action="remove-resource" data-resource-id="{{id}}"><i class="fas fa-trash"></i></button></div>{{/if}}
-        </article>
-        {{else}}<p class="qm-empty">No shared resources are configured.</p>{{/each}}
-      </div>
-      {{#if isGM}}<button type="button" data-action="add-resource"><i class="fas fa-plus"></i> Add resource</button>{{/if}}
-    </div>
-
-    <div class="tab" data-group="primary-tabs" data-tab="log">
-      <ol class="qm-log">
+    <div class="tab" data-group="primary-tabs" data-tab="transactions">
+      <div class="qm-section-heading"><div><h2>Transaction History</h2><p>Every Item movement and balance-changing action is recorded here.</p></div></div>
+      <ol class="qm-transaction-list full">
         {{#each transactions}}
-        <li><strong>{{action}}</strong> {{name}} <small>{{when}} · {{userName}}{{#if source}} · {{source}}{{/if}}{{#if destination}} → {{destination}}{{/if}}</small></li>
+        <li>
+          <time>{{when}}</time>
+          <span class="qm-transaction-user">{{userName}}</span>
+          <span class="qm-transaction-label">{{label}}</span>
+          <span class="qm-transaction-description"><strong>{{name}}</strong>{{#if details}} — {{details}}{{/if}}</span>
+          <i class="fas {{icon}}"></i>
+        </li>
         {{else}}<li class="qm-empty">No transactions recorded.</li>{{/each}}
       </ol>
+    </div>
+
+    <div class="tab" data-group="primary-tabs" data-tab="settings">
+      <div class="qm-settings-grid">
+        <section class="qm-settings-panel">
+          <h2>Module Settings</h2>
+          <dl>
+            <div><dt>Items sidebar label</dt><dd>{{buttonLabel}}</dd></div>
+            <div><dt>Allow spell Items</dt><dd>{{#if allowSpells}}Enabled{{else}}Disabled{{/if}}</dd></div>
+            <div><dt>Maximum transaction entries</dt><dd>{{maxLog}}</dd></div>
+          </dl>
+          {{#if isGM}}<button type="button" data-action="open-module-settings"><i class="fas fa-cog"></i> Open Foundry Module Settings</button>{{/if}}
+        </section>
+
+        <section class="qm-settings-panel">
+          <div class="qm-panel-heading"><div><h2>Shared Resources</h2><p>Existing resource tracking is retained here.</p></div>{{#if isGM}}<button type="button" data-action="add-resource"><i class="fas fa-plus"></i> Add Resource</button>{{/if}}</div>
+          <div class="qm-resource-grid">
+            {{#each resources}}
+            <article class="qm-resource-card">
+              <strong>{{name}}</strong>
+              <div class="qm-resource-value">{{value}}{{#if max}} / {{max}}{{/if}}</div>
+              {{#if ../isGM}}<div class="qm-row-actions"><button type="button" data-action="resource-adjust" data-resource-id="{{id}}">Adjust</button><button type="button" class="qm-danger-icon" data-action="remove-resource" data-resource-id="{{id}}"><i class="fas fa-trash"></i></button></div>{{/if}}
+            </article>
+            {{else}}<p class="qm-empty">No shared resources are configured.</p>{{/each}}
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </section>

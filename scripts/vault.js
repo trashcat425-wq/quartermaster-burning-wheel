@@ -1,4 +1,4 @@
-import { DEFAULT_CURRENCIES, FLAGS, MODULE_ID, MODULE_TITLE, SETTINGS } from "./constants.js";
+import { DEFAULT_CURRENCIES, FLAGS, LEDGER_VERSION, MODULE_ID, MODULE_TITLE, SETTINGS } from "./constants.js";
 import { vaultActorType } from "./adapter.js";
 
 export function getVault() {
@@ -21,7 +21,11 @@ export async function ensureVault() {
   const ownership = { default: CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER };
   for (const user of game.users) if (user.isGM) ownership[user.id] = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
 
-  const balances = Object.fromEntries(DEFAULT_CURRENCIES.map(c => [c.id, 0]));
+  const balances = {};
+  for (const currency of DEFAULT_CURRENCIES) {
+    for (const denomination of currency.denominations) balances[denomination.id] = 0;
+  }
+
   const cls = getDocumentClass("Actor");
   vault = await cls.create({
     name: "Quartermaster Vault (Burning Wheel)",
@@ -32,6 +36,7 @@ export async function ensureVault() {
       [MODULE_ID]: {
         [FLAGS.VAULT]: true,
         [FLAGS.CURRENCY_BALANCES]: balances,
+        [FLAGS.LEDGER_VERSION]: LEDGER_VERSION,
         [FLAGS.RESOURCES]: [],
         [FLAGS.TRANSACTIONS]: [],
         [FLAGS.DATA_VERSION]: game.modules.get(MODULE_ID)?.version ?? "0.0.0"

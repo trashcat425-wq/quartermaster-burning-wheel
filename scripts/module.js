@@ -2,6 +2,7 @@ import { MODULE_ID, MODULE_TITLE } from "./constants.js";
 import { registerSettings } from "./settings.js";
 import { ensureVault, hideVaultFromDirectory, hideVaultFromUserConfig, preventVaultCharacterAssignment, preventVaultDeletion } from "./vault.js";
 import { injectSidebarButton, openQuartermaster } from "./app.js";
+import { migrateLedgerData } from "./ledger.js";
 import { registerSocket, requestOperation } from "./operations.js";
 
 Hooks.once("init", () => {
@@ -15,7 +16,8 @@ Hooks.once("init", () => {
 
 Hooks.once("ready", async () => {
   registerSocket();
-  await ensureVault();
+  const vault = await ensureVault();
+  await migrateLedgerData(vault);
 });
 
 Hooks.on("renderItemDirectory", injectSidebarButton);

@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0-bw.1
+
+- Rebuilt the shared inventory and Ledger in the approved dark Quartermaster interface.
+- Added inventory search, sorting, and section filters for Weapons, Armor, Gear, Possessions, Property, and optional Spells.
+- Added a Deposit Items dialog while retaining drag-and-drop deposits.
+- Added editable shared-Item images through Foundry's file browser.
+- Added a Gear/Possession classification flag for Burning Wheel possession Items.
+- Defined a Currency as one complete Ledger column and a denomination as one row within it.
+- Added editable denomination icons through Foundry's file browser.
+- Added quick Currency renaming from the header pencil.
+- Kept the full Currency editor on the bottom Edit button.
+- Removed the duplicate header delete control.
+- Added inline denomination balance editing, with every change recorded as a transaction.
+- Added manual Convert and whole-Currency Normalize actions.
+- Added a Recent Transactions panel to the Ledger and a complete Transactions tab.
+- Added Currency reordering.
+- Added enforced confirmation before deleting any Currency or denomination with a nonzero balance.
+- Preserved stable Currency and denomination IDs through renames, icon changes, and full edits.
+- Moved the existing shared-resource interface into the Settings tab.
+
 ## 0.2.0-bw.1
 
 - Rebuilt the Ledger around Currency columns and denomination rows.
